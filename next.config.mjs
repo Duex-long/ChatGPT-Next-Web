@@ -50,6 +50,7 @@ const CorsHeaders = [
     key: "Access-Control-Max-Age",
     value: "86400",
   },
+
 ];
 
 if (mode !== "export") {
@@ -67,7 +68,9 @@ if (mode !== "export") {
       // adjust for previous version directly using "/api/proxy/" as proxy base route
       {
         source: "/api/proxy/v1/:path*",
-        destination: "https://api.openai.com/v1/:path*",
+        // destination: "https://api.openai.com/v1/:path*",
+        destination: "http://localhost:3333/v1/:path*",
+
       },
       {
         source: "/api/proxy/google/:path*",
@@ -75,7 +78,8 @@ if (mode !== "export") {
       },
       {
         source: "/api/proxy/openai/:path*",
-        destination: "https://api.openai.com/:path*",
+        // destination: "https://api.openai.com/:path*",
+        destination: "http://localhost:3333/v1/:path*",
       },
       {
         source: "/google-fonts/:path*",

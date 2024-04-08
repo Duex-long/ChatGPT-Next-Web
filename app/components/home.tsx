@@ -145,9 +145,7 @@ function Screen() {
       }
     >
       {isAuth ? (
-        <>
-          <AuthPage />
-        </>
+        <>{/* <AuthPage /> */}</>
       ) : (
         <>
           <SideBar className={isHome ? styles["sidebar-show"] : ""} />
