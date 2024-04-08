@@ -17,6 +17,8 @@ import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
 
+import ConfigIcon from "../icons/config.svg";
+
 import {
   HashRouter as Router,
   Routes,
@@ -29,6 +31,8 @@ import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
 import { useAccessStore } from "../store";
+import { IconButton } from "./button";
+import { Input, PasswordInput } from "./ui-lib";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -136,32 +140,46 @@ function Screen() {
   }, []);
 
   return (
-    <div
-      className={
-        styles.container +
-        ` ${shouldTightBorder ? styles["tight-container"] : styles.container} ${
-          getLang() === "ar" ? styles["rtl-screen"] : ""
-        }`
-      }
-    >
-      {isAuth ? (
-        <>{/* <AuthPage /> */}</>
-      ) : (
-        <>
-          <SideBar className={isHome ? styles["sidebar-show"] : ""} />
+    <>
+      <div
+        className={
+          styles.container +
+          ` ${
+            shouldTightBorder ? styles["tight-container"] : styles.container
+          } ${getLang() === "ar" ? styles["rtl-screen"] : ""}`
+        }
+      >
+        {isAuth ? (
+          <>{/* <AuthPage /> */}</>
+        ) : (
+          <>
+            <SideBar className={isHome ? styles["sidebar-show"] : ""} />
 
-          <div className={styles["window-content"]} id={SlotID.AppBody}>
-            <Routes>
-              <Route path={Path.Home} element={<Chat />} />
-              <Route path={Path.NewChat} element={<NewChat />} />
-              <Route path={Path.Masks} element={<MaskPage />} />
-              <Route path={Path.Chat} element={<Chat />} />
-              <Route path={Path.Settings} element={<Settings />} />
-            </Routes>
-          </div>
-        </>
-      )}
-    </div>
+            <div className={styles["window-content"]} id={SlotID.AppBody}>
+              <Routes>
+                <Route path={Path.Home} element={<Chat />} />
+                <Route path={Path.NewChat} element={<NewChat />} />
+                <Route path={Path.Masks} element={<MaskPage />} />
+                <Route path={Path.Chat} element={<Chat />} />
+                <Route path={Path.Settings} element={<Settings />} />
+              </Routes>
+            </div>
+
+            <div className={styles["login-container"]}>
+              <h3 className={styles["login-title"]}>需要验证</h3>
+              <p> 使用功能需要有账户验证许可</p>
+              <div className={styles["insert-container"]}>
+                <input type="text" placeholder="Insert your username" />
+              </div>
+              <div className={styles["insert-container"]}>
+                <input type="password" placeholder="Insert your username" />
+              </div>
+              <IconButton key="confirm" icon={<ConfigIcon />} text="Submit" />
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 }
 
