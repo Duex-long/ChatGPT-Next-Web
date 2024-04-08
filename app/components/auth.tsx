@@ -59,9 +59,9 @@ export function AuthPage() {
             placeholder={Locale.Settings.Access.OpenAI.ApiKey.Placeholder}
             value={accessStore.openaiApiKey}
             onChange={(e) => {
-              accessStore.update(
-                (access) => (access.openaiApiKey = e.currentTarget.value),
-              );
+              accessStore.update((access) => {
+                return (access.openaiApiKey = e.currentTarget.value);
+              });
             }}
           />
           <input

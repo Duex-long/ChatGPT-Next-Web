@@ -492,7 +492,8 @@ function SyncItems() {
   return (
     <>
       <List>
-        <ListItem
+        {/* 云端配置 */}
+        {/* <ListItem
           title={Locale.Settings.Sync.CloudState}
           subTitle={
             syncStore.lastProvider
@@ -526,7 +527,7 @@ function SyncItems() {
               />
             )}
           </div>
-        </ListItem>
+        </ListItem> */}
 
         <ListItem
           title={Locale.Settings.Sync.LocalState}
@@ -565,7 +566,7 @@ export function Settings() {
   const updateConfig = config.update;
 
   const updateStore = useUpdateStore();
-  const [checkingUpdate, setCheckingUpdate] = useState(false);
+  const [checkingUpdate, setCheckingUpdate] = useState(true);
   const currentVersion = updateStore.formatVersion(updateStore.version);
   const remoteId = updateStore.formatVersion(updateStore.remoteVersion);
   const hasNewVersion = currentVersion !== remoteId;
@@ -582,6 +583,7 @@ export function Settings() {
   }
 
   const accessStore = useAccessStore();
+  console.log(accessStore);
   const shouldHideBalanceQuery = useMemo(() => {
     const isOpenAiUrl = accessStore.openaiUrl.includes(OPENAI_BASE_URL);
 
@@ -719,11 +721,7 @@ export function Settings() {
                 {Locale.Settings.Update.GoToUpdate}
               </Link>
             ) : (
-              <IconButton
-                icon={<ResetIcon></ResetIcon>}
-                text={Locale.Settings.Update.CheckUpdate}
-                onClick={() => checkUpdate(true)}
-              />
+              <></>
             )}
           </ListItem>
 
@@ -919,7 +917,7 @@ export function Settings() {
 
           {!accessStore.hideUserApiKey && (
             <>
-              {
+              {/* {
                 // Conditionally render the following ListItem based on clientConfig.isApp
                 !clientConfig?.isApp && ( // only show if isApp is false
                   <ListItem
@@ -938,10 +936,11 @@ export function Settings() {
                     ></input>
                   </ListItem>
                 )
-              }
-              {accessStore.useCustomConfig && (
+              } */}
+              {
+                // 服务商
                 <>
-                  <ListItem
+                  {/* <ListItem
                     title={Locale.Settings.Access.Provider.Title}
                     subTitle={Locale.Settings.Access.Provider.SubTitle}
                   >
@@ -961,11 +960,10 @@ export function Settings() {
                         </option>
                       ))}
                     </Select>
-                  </ListItem>
+                  </ListItem> */}
 
-                  {accessStore.provider === "OpenAI" ? (
-                    <>
-                      <ListItem
+                  <>
+                    {/* <ListItem
                         title={Locale.Settings.Access.OpenAI.Endpoint.Title}
                         subTitle={
                           Locale.Settings.Access.OpenAI.Endpoint.SubTitle
@@ -982,8 +980,8 @@ export function Settings() {
                             )
                           }
                         ></input>
-                      </ListItem>
-                      <ListItem
+                      </ListItem> */}
+                    {/* <ListItem
                         title={Locale.Settings.Access.OpenAI.ApiKey.Title}
                         subTitle={Locale.Settings.Access.OpenAI.ApiKey.SubTitle}
                       >
@@ -1000,129 +998,10 @@ export function Settings() {
                             );
                           }}
                         />
-                      </ListItem>
-                    </>
-                  ) : accessStore.provider === "Azure" ? (
-                    <>
-                      <ListItem
-                        title={Locale.Settings.Access.Azure.Endpoint.Title}
-                        subTitle={
-                          Locale.Settings.Access.Azure.Endpoint.SubTitle +
-                          Azure.ExampleEndpoint
-                        }
-                      >
-                        <input
-                          type="text"
-                          value={accessStore.azureUrl}
-                          placeholder={Azure.ExampleEndpoint}
-                          onChange={(e) =>
-                            accessStore.update(
-                              (access) =>
-                                (access.azureUrl = e.currentTarget.value),
-                            )
-                          }
-                        ></input>
-                      </ListItem>
-                      <ListItem
-                        title={Locale.Settings.Access.Azure.ApiKey.Title}
-                        subTitle={Locale.Settings.Access.Azure.ApiKey.SubTitle}
-                      >
-                        <PasswordInput
-                          value={accessStore.azureApiKey}
-                          type="text"
-                          placeholder={
-                            Locale.Settings.Access.Azure.ApiKey.Placeholder
-                          }
-                          onChange={(e) => {
-                            accessStore.update(
-                              (access) =>
-                                (access.azureApiKey = e.currentTarget.value),
-                            );
-                          }}
-                        />
-                      </ListItem>
-                      <ListItem
-                        title={Locale.Settings.Access.Azure.ApiVerion.Title}
-                        subTitle={
-                          Locale.Settings.Access.Azure.ApiVerion.SubTitle
-                        }
-                      >
-                        <input
-                          type="text"
-                          value={accessStore.azureApiVersion}
-                          placeholder="2023-08-01-preview"
-                          onChange={(e) =>
-                            accessStore.update(
-                              (access) =>
-                                (access.azureApiVersion =
-                                  e.currentTarget.value),
-                            )
-                          }
-                        ></input>
-                      </ListItem>
-                    </>
-                  ) : accessStore.provider === "Google" ? (
-                    <>
-                      <ListItem
-                        title={Locale.Settings.Access.Google.Endpoint.Title}
-                        subTitle={
-                          Locale.Settings.Access.Google.Endpoint.SubTitle +
-                          Google.ExampleEndpoint
-                        }
-                      >
-                        <input
-                          type="text"
-                          value={accessStore.googleUrl}
-                          placeholder={Google.ExampleEndpoint}
-                          onChange={(e) =>
-                            accessStore.update(
-                              (access) =>
-                                (access.googleUrl = e.currentTarget.value),
-                            )
-                          }
-                        ></input>
-                      </ListItem>
-                      <ListItem
-                        title={Locale.Settings.Access.Google.ApiKey.Title}
-                        subTitle={Locale.Settings.Access.Google.ApiKey.SubTitle}
-                      >
-                        <PasswordInput
-                          value={accessStore.googleApiKey}
-                          type="text"
-                          placeholder={
-                            Locale.Settings.Access.Google.ApiKey.Placeholder
-                          }
-                          onChange={(e) => {
-                            accessStore.update(
-                              (access) =>
-                                (access.googleApiKey = e.currentTarget.value),
-                            );
-                          }}
-                        />
-                      </ListItem>
-                      <ListItem
-                        title={Locale.Settings.Access.Google.ApiVersion.Title}
-                        subTitle={
-                          Locale.Settings.Access.Google.ApiVersion.SubTitle
-                        }
-                      >
-                        <input
-                          type="text"
-                          value={accessStore.googleApiVersion}
-                          placeholder="2023-08-01-preview"
-                          onChange={(e) =>
-                            accessStore.update(
-                              (access) =>
-                                (access.googleApiVersion =
-                                  e.currentTarget.value),
-                            )
-                          }
-                        ></input>
-                      </ListItem>
-                    </>
-                  ) : null}
+                      </ListItem> */}
+                  </>
                 </>
-              )}
+              }
             </>
           )}
 
@@ -1152,7 +1031,7 @@ export function Settings() {
             </ListItem>
           ) : null}
 
-          <ListItem
+          {/* <ListItem
             title={Locale.Settings.Access.CustomModel.Title}
             subTitle={Locale.Settings.Access.CustomModel.SubTitle}
           >
@@ -1166,7 +1045,7 @@ export function Settings() {
                 )
               }
             ></input>
-          </ListItem>
+          </ListItem> */}
         </List>
 
         <List>
@@ -1184,7 +1063,7 @@ export function Settings() {
           <UserPromptModal onClose={() => setShowPromptModal(false)} />
         )}
 
-        <DangerItems />
+        {/* <DangerItems /> */}
       </div>
     </ErrorBoundary>
   );

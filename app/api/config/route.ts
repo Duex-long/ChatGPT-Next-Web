@@ -20,7 +20,7 @@ declare global {
 }
 
 async function handle() {
-  return NextResponse.json(DANGER_CONFIG);
+  return NextResponse.json(serverConfig);
 }
 
 export const GET = handle;

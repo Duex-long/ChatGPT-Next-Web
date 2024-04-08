@@ -117,6 +117,8 @@ export const useAccessStore = createPersistStore(
         state.azureApiVersion = "2023-08-01-preview";
       }
 
+      console.log("persistedState", persistedState);
+
       return persistedState as any;
     },
   },
