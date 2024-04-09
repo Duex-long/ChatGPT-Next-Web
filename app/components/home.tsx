@@ -165,7 +165,7 @@ function Screen() {
               </Routes>
             </div>
 
-            <div className={styles["login-container"]}>
+            {/* <div className={styles["login-container"]}>
               <h3 className={styles["login-title"]}>需要验证</h3>
               <p> 使用功能需要有账户验证许可</p>
               <div className={styles["insert-container"]}>
@@ -175,7 +175,7 @@ function Screen() {
                 <input type="password" placeholder="Insert your username" />
               </div>
               <IconButton key="confirm" icon={<ConfigIcon />} text="Submit" />
-            </div>
+            </div> */}
           </>
         )}
       </div>
