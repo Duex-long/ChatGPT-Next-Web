@@ -91,7 +91,7 @@ if (mode !== "export") {
       },
       {
         source: "/gateway/:path*",
-        destination: "http://127.0.0.1:3000/:path*"
+        destination: "http://127.0.0.1:3333/:path*"
       }
     ];
 
