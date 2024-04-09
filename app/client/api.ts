@@ -8,6 +8,7 @@ import {
 import { ChatMessage, ModelType, useAccessStore, useChatStore } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
 import { GeminiProApi } from "./platforms/google";
+import { getToken, getUserId } from "../utils/token";
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
 
@@ -170,7 +171,7 @@ export function getHeaders() {
   if (!(isGoogle && clientConfig?.isApp)) {
     // use user's api key first
     if (validString(apiKey)) {
-      headers[authHeader] = makeBearer(apiKey);
+      headers[authHeader] = getUserId() || "";
     } else if (
       accessStore.enabledAccessControl() &&
       validString(accessStore.accessCode)

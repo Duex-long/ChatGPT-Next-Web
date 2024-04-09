@@ -2,7 +2,7 @@
 
 require("../polyfill");
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
 import styles from "./home.module.scss";
 
@@ -17,7 +17,8 @@ import { ErrorBoundary } from "./error";
 
 import { getISOLang, getLang } from "../locales";
 
-import ConfigIcon from "../icons/config.svg";
+import { md5 } from "js-md5";
+import uuidv4 from "uuid-random";
 
 import {
   HashRouter as Router,
@@ -32,7 +33,9 @@ import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
 import { useAccessStore } from "../store";
 import { IconButton } from "./button";
-import { Input, PasswordInput } from "./ui-lib";
+import { Input, PasswordInput, Toast, showToast } from "./ui-lib";
+import { fetchGet, fetchPostJson } from "../utils/fetch";
+import { clearCache, getToken, setToken, setUserId } from "../utils/token";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -126,12 +129,19 @@ const loadAsyncGoogleFont = () => {
   document.head.appendChild(linkEl);
 };
 
+const checkLogin = () => {
+  const token = getToken();
+  if (token) return true;
+  return false;
+};
+
 function Screen() {
   const config = useAppConfig();
   const location = useLocation();
   const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
   const isMobileScreen = useMobileScreen();
+  const [loginState, setLoginState] = useState(checkLogin());
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
 
@@ -165,20 +175,123 @@ function Screen() {
               </Routes>
             </div>
 
-            {/* <div className={styles["login-container"]}>
-              <h3 className={styles["login-title"]}>需要验证</h3>
-              <p> 使用功能需要有账户验证许可</p>
-              <div className={styles["insert-container"]}>
-                <input type="text" placeholder="Insert your username" />
-              </div>
-              <div className={styles["insert-container"]}>
-                <input type="password" placeholder="Insert your username" />
-              </div>
-              <IconButton key="confirm" icon={<ConfigIcon />} text="Submit" />
-            </div> */}
+            {loginState ? undefined : (
+              <LoginContainer changeStateFunc={setLoginState} />
+            )}
           </>
         )}
       </div>
+    </>
+  );
+}
+
+const getCacheKey = () => uuidv4();
+
+const getPublicKey = async (cacheKey: string): Promise<string> => {
+  const res = await fetchGet("admin/user/getPublicKey", { cacheKey });
+  const { data } = await res.json();
+  return data;
+};
+const rsaEncrypt = (publicKey: string, target: string) => {
+  // import JsEncrypt from "jsencrypt";
+
+  const JsEncrypt = require("jsencrypt");
+  console.log(JsEncrypt, "JsEncrypt");
+  const myEncrypt = new JsEncrypt.default();
+  const md5Target = md5(target);
+  myEncrypt.setPublicKey(publicKey);
+  const result = myEncrypt.encrypt(md5Target);
+  return result || "";
+};
+
+const userLogin = async (username: string, password: string) => {
+  clearCache();
+  const cacheKey = getCacheKey();
+  const publicKey = await getPublicKey(cacheKey);
+  if (publicKey) {
+    const encryptPassword = rsaEncrypt(publicKey, password);
+    if (!encryptPassword) {
+      throw Error("加密错误");
+    }
+    const userInfo = {
+      username,
+      password: encryptPassword,
+      cacheKey,
+    };
+    const loginResponse = await fetchPostJson("admin/user/login", userInfo);
+    const data = await loginResponse.json();
+    if (data.message) {
+      throw Error(data.message);
+    }
+    return data.data;
+  }
+};
+
+function LoginContainer({
+  changeStateFunc,
+}: {
+  changeStateFunc: Dispatch<SetStateAction<boolean>>;
+}) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loadingState, setLoadingState] = useState(false);
+
+  const checkFormIsEmpty = () => {
+    let check = false;
+    !username
+      ? showToast("请输入用户名")
+      : !password
+      ? showToast("请输入密码")
+      : (check = true);
+    return check;
+  };
+  const loginClick = async () => {
+    const allowNext = checkFormIsEmpty();
+    if (!allowNext) return;
+    setLoadingState(true);
+    try {
+      const data = await userLogin(username, password);
+      setToken(data.token);
+      setUserId(username);
+      changeStateFunc(true);
+      // navigate('/', {
+      //   replace: true,
+      // })
+    } catch (e) {
+      showToast("登陆失败");
+    } finally {
+      setPassword("");
+      setLoadingState(false);
+    }
+  };
+  return (
+    <>
+      <div className={styles["login-container"]}>
+        <h3 className={styles["login-title"]}>需要验证</h3>
+        <p> 使用功能需要有账户验证许可</p>
+        <div className={styles["insert-container"]}>
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            type="text"
+            placeholder="Insert username"
+          />
+        </div>
+        <div className={styles["insert-container"]}>
+          <input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            placeholder="Insert password"
+          />
+        </div>
+        <IconButton onClick={loginClick} key="confirm" text="Submit" />
+      </div>
+      {loadingState ? (
+        <div className={styles["login-container"]}>
+          <Loading noLogo />
+        </div>
+      ) : undefined}
     </>
   );
 }

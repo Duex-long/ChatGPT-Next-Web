@@ -89,6 +89,10 @@ if (mode !== "export") {
         source: "/sharegpt",
         destination: "https://sharegpt.com/api/conversations",
       },
+      {
+        source: "/gateway/:path*",
+        destination: "http://127.0.0.1:3000/:path*"
+      }
     ];
 
     return {
