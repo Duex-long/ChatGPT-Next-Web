@@ -158,11 +158,7 @@ export function getHeaders() {
   const isGoogle = modelConfig.model.startsWith("gemini");
   const isAzure = accessStore.provider === ServiceProvider.Azure;
   const authHeader = isAzure ? "api-key" : "Authorization";
-  const apiKey = isGoogle
-    ? accessStore.googleApiKey
-    : isAzure
-    ? accessStore.azureApiKey
-    : accessStore.openaiApiKey;
+  const apiKey = getUserId() || "";
   const clientConfig = getClientConfig();
   const makeBearer = (s: string) => `${isAzure ? "" : "Bearer "}${s.trim()}`;
   const validString = (x: string) => x && x.length > 0;
@@ -171,7 +167,7 @@ export function getHeaders() {
   if (!(isGoogle && clientConfig?.isApp)) {
     // use user's api key first
     if (validString(apiKey)) {
-      headers[authHeader] = getUserId() || "";
+      headers[authHeader] = apiKey;
     } else if (
       accessStore.enabledAccessControl() &&
       validString(accessStore.accessCode)
@@ -182,5 +178,6 @@ export function getHeaders() {
     }
   }
 
+  console.log(headers, "headers");
   return headers;
 }
