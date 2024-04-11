@@ -168,6 +168,7 @@ export function getHeaders() {
   const validString = (x: string) => x && x.length > 0;
 
   // when using google api in app, not set auth header
+  console.log(isGoogle, clientConfig?.isApp);
   if (!(isGoogle && clientConfig?.isApp)) {
     // use user's api key first
     if (validString(apiKey)) {

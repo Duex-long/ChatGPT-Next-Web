@@ -66,21 +66,12 @@ if (mode !== "export") {
   nextConfig.rewrites = async () => {
     const ret = [
       // adjust for previous version directly using "/api/proxy/" as proxy base route
-      {
-        source: "/api/proxy/v1/:path*",
-        // destination: "https://api.openai.com/v1/:path*",
-        destination: "http://localhost:3333/v1/:path*",
 
-      },
       {
         source: "/api/proxy/google/:path*",
         destination: "https://generativelanguage.googleapis.com/:path*",
       },
-      {
-        source: "/api/proxy/openai/:path*",
-        // destination: "https://api.openai.com/:path*",
-        destination: "http://localhost:3333/v1/:path*",
-      },
+
       {
         source: "/google-fonts/:path*",
         destination: "https://fonts.googleapis.com/:path*",
@@ -89,10 +80,19 @@ if (mode !== "export") {
         source: "/sharegpt",
         destination: "https://sharegpt.com/api/conversations",
       },
+
+      {
+        source: "/api/proxy/v1/:path*",
+        destination: `${process.env.SERVER_HOST}/v1/:path*`,
+      },
       {
         source: "/gateway/:path*",
-        destination: "http://127.0.0.1:3333/:path*"
-      }
+        destination: `${process.env.SERVER_HOST}/:path*`
+      },
+      {
+        source: "/api/proxy/openai/:path*",
+        destination: `${process.env.SERVER_HOST}/v1/:path*`,
+      },
     ];
 
     return {
