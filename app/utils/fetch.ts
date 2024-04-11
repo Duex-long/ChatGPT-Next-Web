@@ -67,6 +67,7 @@ const getAuthorizationHeader = (
   const secretKey = getSecretKey() || SECRET_KEY;
   const { canonicalQueryString, hashedRequestPayload, timestamp } = options;
   const host = process.env.SERVER_HOST;
+  console.log(host, "host");
   const canonicalHeaders =
     "content-type:application/json; charset=utf-8\n" +
     "host:" +
