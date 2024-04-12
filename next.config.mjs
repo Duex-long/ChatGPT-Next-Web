@@ -90,6 +90,10 @@ if (mode !== "export") {
         destination: `${process.env.SERVER_HOST}/:path*`
       },
       {
+        source: "/api/openai/:path*",
+        destination: `${process.env.SERVER_HOST}/v1/:path*`,
+      },
+      {
         source: "/api/proxy/openai/:path*",
         destination: `${process.env.SERVER_HOST}/v1/:path*`,
       },
