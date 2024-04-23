@@ -45,9 +45,7 @@ export class ChatGPTApi implements LLMApi {
 
   path(path: string): string {
     const accessStore = useAccessStore.getState();
-
     const isAzure = accessStore.provider === ServiceProvider.Azure;
-
     if (isAzure && !accessStore.isValidAzure()) {
       throw Error(
         "incomplete azure config, please check it in your settings page",
@@ -127,14 +125,15 @@ export class ChatGPTApi implements LLMApi {
     options.onController?.(controller);
 
     try {
-      const chatPath = this.path(OpenaiPath.ChatPath);
+      // const chatPath = this.path(OpenaiPath.ChatPath);
+      const chatPath = "api/openai/v1/chat/completions";
+
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
         signal: controller.signal,
         headers: getHeaders(),
       };
-      console.log(chatPayload, "chatPayload");
 
       // make a fetch request
       const requestTimeoutId = setTimeout(
