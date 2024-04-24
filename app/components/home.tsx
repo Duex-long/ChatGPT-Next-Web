@@ -128,9 +128,18 @@ const loadAsyncGoogleFont = () => {
   document.head.appendChild(linkEl);
 };
 
-const checkLogin = () => {
+
+
+const checkLogin = async () => {
   const token = getToken();
-  if (token) return true;
+  if (token) {
+    const res = await fetchGet("admin/user/info");
+    const { data, message } = await res.json();
+    if (message) {
+      return false;
+    }
+    return true;
+  }
   return false;
 };
 
@@ -140,12 +149,18 @@ function Screen() {
   const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
   const isMobileScreen = useMobileScreen();
-  const [loginState, setLoginState] = useState(checkLogin());
+  const [loginState, setLoginState] = useState(false);
   const shouldTightBorder =
     getClientConfig()?.isApp || (config.tightBorder && !isMobileScreen);
 
   useEffect(() => {
     loadAsyncGoogleFont();
+  }, []);
+
+  useEffect(() => {
+    checkLogin().then((res) => {
+      setLoginState(res);
+    });
   }, []);
 
   return (
