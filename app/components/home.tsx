@@ -136,6 +136,7 @@ const checkLogin = async () => {
     const res = await fetchGet("admin/user/info");
     const { data, message } = await res.json();
     if (message) {
+      clearCache();
       return false;
     }
     return true;
